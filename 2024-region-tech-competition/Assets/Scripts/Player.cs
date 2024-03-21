@@ -4,28 +4,46 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    [SerializeField] private float moveSpeed;
+    [SerializeField] private Rigidbody phys;
+    [SerializeField] private float steering;
+    [SerializeField] private float acceleration;
+    [SerializeField] private LayerMask layerMask;
 
-    private WheelCollider[] wheels;
-
-    private void Awake()
-    {
-        wheels = GetComponentsInChildren<WheelCollider>();
-    }
+    private float speed;
+    private float curSpeed;
+    private float rotate;
+    private float curRotate;
 
     private void Update()
     {
-        var h = Input.GetAxis("Horizontal");
-        var v = Input.GetAxis("Vertical");
-        var dir = new Vector3(h, 0, v).normalized;
+        transform.position = phys.position;
 
-        foreach(var w in wheels)
-            w.attachedRigidbody.AddForce(transform.InverseTransformDirection(dir) * moveSpeed);
+        speed = acceleration * Input.GetAxisRaw("Vertical");
+
+        if (Input.GetAxis("Horizontal") != 0)
+        {
+            var dir = Input.GetAxis("Horizontal") > 0 ? 1 : -1;
+            var amount = Mathf.Abs(Input.GetAxis("Horizontal"));
+            Steer(dir, amount);
+        }
+
+        curSpeed = Mathf.SmoothStep(curSpeed, speed, Time.deltaTime * 12f); speed = 0;
+        curRotate = Mathf.Lerp(curRotate, rotate, Time.deltaTime * 4f); rotate = 0;
     }
 
-    private void LateUpdate()
+    private void FixedUpdate()
     {
-        Camera.main.transform.position =
-            Vector3.Lerp(Camera.main.transform.position, transform.position + new Vector3(0, 2.5f, -6f), Time.deltaTime * 5f);
+        phys.AddForce(transform.forward * curSpeed, ForceMode.Acceleration);
+        transform.eulerAngles = Vector3.Lerp(transform.eulerAngles, new Vector3(0, transform.eulerAngles.y + curRotate, 0), Time.deltaTime * 5f);
+
+        //Physics.Raycast(transform.position, Vector3.down, out var hit, 2f, layerMask);
+        //transform.up = Vector3.Lerp(transform.up, hit.normal, 8f * Time.deltaTime);
+        //Debug.DrawRay(transform.position, transform.up, Color.red);
+        //Debug.DrawRay(transform.position, hit.normal, Color.blue);
+    }
+
+    private void Steer(int dir, float amount)
+    {
+        rotate = (steering * dir) * amount;
     }
 }
