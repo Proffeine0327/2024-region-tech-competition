@@ -4,20 +4,19 @@ using UnityEngine;
 
 public class CameraMover : MonoBehaviour
 {
-    private Vector3 startPosition;
-    private Quaternion startRotation;
+    [SerializeField] private Vector3 posOffset;
+    [SerializeField] private Vector3 lookOffset;
+    [SerializeField] private float speed;
 
-    private FlyPlayer player => FlyPlayer.Instance;
-
-    private void Start()
-    {
-        startPosition = player.transform.TransformPoint(transform.position);
-        startRotation = player.transform.rotation * transform.rotation;
-    }
+    private Player player => Player.Instance;
 
     void FixedUpdate()
     {
-        transform.position = Vector3.Lerp(transform.position, player.transform.position + startPosition, Time.deltaTime * 10f);
-        transform.rotation = Quaternion.Lerp(transform.rotation, player.transform.rotation * startRotation, Time.deltaTime * 10f);
+        var targetPos = player.Orientation.TransformPoint(posOffset);
+        transform.position = Vector3.Lerp(transform.position, targetPos, speed);
+
+        var dir = player.Orientation.position - transform.position;
+        var targetRot = Quaternion.LookRotation(dir + lookOffset, Vector3.up);
+        transform.rotation = Quaternion.Lerp(transform.rotation, targetRot, speed);
     }
 }
