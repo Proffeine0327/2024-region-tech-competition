@@ -39,6 +39,7 @@ public class TweenInvoker : MonoBehaviour
             x(Mathf.LerpUnclamped(sValue, eValue, TweenUtility.GetEaseValue(ease, progress / time)));
             yield return wait;
         }
+        x(eValue);
     }
     private IEnumerator Vector2Tween(Vector2 sValue, Vector2 eValue, float time, Action<Vector2> x, Ease ease, UpdateType updateType)
     {
@@ -48,6 +49,7 @@ public class TweenInvoker : MonoBehaviour
             x(Vector2.LerpUnclamped(sValue, eValue, TweenUtility.GetEaseValue(ease, progress / time)));
             yield return wait;
         }
+        x(eValue);
     }
     private IEnumerator Vector3Tween(Vector3 sValue, Vector3 eValue, float time, Action<Vector3> x, Ease ease, UpdateType updateType)
     {
@@ -57,6 +59,7 @@ public class TweenInvoker : MonoBehaviour
             x(Vector3.LerpUnclamped(sValue, eValue, TweenUtility.GetEaseValue(ease, progress / time)));
             yield return wait;
         }
+        x(eValue);
     }
     private IEnumerator ColorTween(Color sValue, Color eValue, float time, Action<Color> x, Ease ease, UpdateType updateType)
     {
@@ -66,5 +69,6 @@ public class TweenInvoker : MonoBehaviour
             x(Color.LerpUnclamped(sValue, eValue, TweenUtility.GetEaseValue(ease, progress / time)));
             yield return wait;
         }
+        x(eValue);
     }
 }

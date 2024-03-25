@@ -6,14 +6,20 @@ public class GameManager : Singleton<GameManager>
 {
     [SerializeField] private Transform endPoint;
 
-    public bool IsGameStart { get; private set; }
+    public bool IsGameRunning { get; private set; }
     public Observer<int> WaitCount { get; private set; } = new() { Value = -1 };
-
     public Transform EndPoint => endPoint;
+    public float PlayTime { get; private set; }
 
     private void Start()
     {
         StartCoroutine(GameRoutine());
+    }
+
+    private void Update()
+    {
+        if (IsGameRunning)
+            PlayTime += Time.deltaTime;
     }
 
     private IEnumerator GameRoutine()
@@ -27,6 +33,6 @@ public class GameManager : Singleton<GameManager>
         yield return new WaitForSeconds(1f);
         WaitCount.Value = 0;
 
-        IsGameStart = true;
+        IsGameRunning = true;
     }
 }

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class Player : MonoBehaviour
 {
@@ -12,20 +13,25 @@ public class Player : MonoBehaviour
     [SerializeField] private LayerMask modelAlignLayer;
     [SerializeField] private float acc;
     [SerializeField] private float maxSpeed;
+    [SerializeField] private float fastMaxSpeed;
+    [SerializeField] private float superFastMaxSpeed;
     [SerializeField] private float steerSpeed;
     [SerializeField] private float driftSteerSpeed;
 
     private bool canMove = true;
     private bool isSliping;
     private float defaultFriction;
+    private float curMaxSpeed;
     private float curSteerSpeed;
     private new Rigidbody rigidbody;
     private new Collider collider;
     private List<TrailRenderer> driftTrails;
+    private GameObject speedParticle;
 
     public Transform Orientation => orientation;
     public float Speed => rigidbody?.velocity.magnitude ?? 0;
     public bool IsSliping => isSliping;
+    public float Money { get; set; }
 
     private void Start()
     {
@@ -33,6 +39,9 @@ public class Player : MonoBehaviour
         collider = GetComponent<Collider>();
         defaultFriction = collider.sharedMaterial.dynamicFriction;
         driftTrails = this.GetComponentsInChildren<TrailRenderer>("drift-trail");
+        speedParticle = GetComponentsInChildren<Transform>().Where(x => x.name == "speed-particle").First().gameObject;
+        speedParticle.SetActive(false);
+        curMaxSpeed = maxSpeed;
     }
 
     private void Update()
@@ -40,7 +49,7 @@ public class Player : MonoBehaviour
         Physics.Raycast(model.position, Vector3.down, out var hit, 10f, modelAlignLayer);
         model.rotation = Quaternion.Lerp(model.rotation, Quaternion.FromToRotation(Vector3.up, hit.normal) * orientation.rotation, Time.deltaTime * 3);
 
-        if (!GameManager.Instance.IsGameStart) return;
+        if (!GameManager.Instance.IsGameRunning) return;
         if (!canMove) return;
 
         if (Input.GetKey(KeyCode.LeftShift))
@@ -56,13 +65,13 @@ public class Player : MonoBehaviour
         orientation.Rotate(0, Input.GetAxis("Horizontal") * curSteerSpeed * Time.deltaTime, 0);
 
         var velY = rigidbody.velocity.y;
-        rigidbody.velocity = Vector3.ClampMagnitude(new Vector3(rigidbody.velocity.x, 0, rigidbody.velocity.z), maxSpeed);
+        rigidbody.velocity = Vector3.ClampMagnitude(new Vector3(rigidbody.velocity.x, 0, rigidbody.velocity.z), curMaxSpeed);
         rigidbody.velocity = new Vector3(rigidbody.velocity.x, velY, rigidbody.velocity.z);
     }
 
     private void FixedUpdate()
     {
-        if (!GameManager.Instance.IsGameStart) return;
+        if (!GameManager.Instance.IsGameRunning) return;
 
         rigidbody.AddForce(Input.GetAxisRaw("Vertical") * model.forward * acc, ForceMode.Acceleration);
     }
@@ -75,8 +84,45 @@ public class Player : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("SlipArea"))
+        if (other.CompareTag("SlipArea") && !isSliping)
             StartCoroutine(SlipRoutine());
+        if (other.CompareTag("Item") && !ItemManager.Instance.IsPickingItem)
+        {
+            Destroy(other.gameObject);
+            ItemManager.Instance.GetRandomItem(item =>
+            {
+                switch (item)
+                {
+                    case ItemType.Money10: Money += 10; break;
+                    case ItemType.Money50: Money += 50;  break;
+                    case ItemType.Money100: Money += 100;  break;
+                    case ItemType.SpeedFast: StartCoroutine(SpeedFastRoutine()); break;
+                    case ItemType.SpeedSuperFast: StartCoroutine(SpeedSuperFastRoutine()); break;
+                    case ItemType.JoinShop:
+                        break;
+                    case ItemType.EndEnum:
+                        break;
+                }
+            });
+        }
+    }
+
+    private IEnumerator SpeedFastRoutine()
+    {
+        speedParticle.SetActive(true);
+        TweenUtility.DOFloat(curMaxSpeed, fastMaxSpeed, 0.5f, x => curMaxSpeed = x);
+        yield return new WaitForSeconds(3f);
+        TweenUtility.DOFloat(curMaxSpeed, maxSpeed, 0.5f, x => curMaxSpeed = x);
+        speedParticle.SetActive(false);
+    }
+
+    private IEnumerator SpeedSuperFastRoutine()
+    {
+        speedParticle.SetActive(true);
+        TweenUtility.DOFloat(curMaxSpeed, superFastMaxSpeed, 0.5f, x => curMaxSpeed = x);
+        yield return new WaitForSeconds(3f);
+        TweenUtility.DOFloat(curMaxSpeed, maxSpeed, 0.5f, x => curMaxSpeed = x);
+        speedParticle.SetActive(false);
     }
 
     private IEnumerator SlipRoutine()
@@ -84,8 +130,9 @@ public class Player : MonoBehaviour
         canMove = false;
         isSliping = true;
         SetFriction(0.05f);
-
+        
         var dir = Input.GetAxis("Horizontal") > 0 ? 1 : -1;
+        model.rotation = Quaternion.Euler(0, 0, 0);
         model.DOLocalRotate(new Vector3(0, dir * 1080, 0), 2f, Ease.OutQuad);
         yield return new WaitForSeconds(2f);
         model.localRotation = Quaternion.Euler(Vector3.zero);

@@ -6,6 +6,7 @@ TagManager:
   tags:
   - DecelerationArea
   - SlipArea
+  - Item
   layers:
   - Default
   - TransparentFX

@@ -15,7 +15,7 @@ public class Enemy : MonoBehaviour
 
     private void Update()
     {
-        if(!isMoving && GameManager.Instance.IsGameStart)
+        if(!isMoving && GameManager.Instance.IsGameRunning)
         {
             isMoving = true;
             agent.SetDestination(GameManager.Instance.EndPoint.position);
