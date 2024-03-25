@@ -8,7 +8,7 @@ public static class Extensions
     public static List<T> GetComponentsInChildren<T>(this MonoBehaviour mb, string name = null) where T : Component
     {
         var list = new List<T>();
-        foreach (var t in mb.GetComponentsInChildren<Transform>())
+        foreach (var t in mb.GetComponentsInChildren<Transform>(true))
         {
             Debug.Log(t.name);
             if (!string.IsNullOrEmpty(name) && t.name != name)

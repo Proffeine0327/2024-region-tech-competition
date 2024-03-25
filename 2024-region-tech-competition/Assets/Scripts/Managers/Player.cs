@@ -3,18 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-public class Player : MonoBehaviour
+public class Player : Singleton<Player>
 {
-    private static Player instance;
-    public static Player Instance => instance ??= FindObjectOfType<Player>();
-
     [SerializeField] private Transform orientation;
     [SerializeField] private Transform model;
     [SerializeField] private LayerMask modelAlignLayer;
     [SerializeField] private float acc;
     [SerializeField] private float maxSpeed;
-    [SerializeField] private float fastMaxSpeed;
-    [SerializeField] private float superFastMaxSpeed;
     [SerializeField] private float steerSpeed;
     [SerializeField] private float driftSteerSpeed;
 
@@ -27,11 +22,12 @@ public class Player : MonoBehaviour
     private new Collider collider;
     private List<TrailRenderer> driftTrails;
     private GameObject speedParticle;
+    private List<MeshRenderer> improveWheelMeshs;
+    private List<MeshRenderer> engineUpgradeMeshs;
 
     public Transform Orientation => orientation;
     public float Speed => rigidbody?.velocity.magnitude ?? 0;
     public bool IsSliping => isSliping;
-    public float Money { get; set; }
 
     private void Start()
     {
@@ -40,6 +36,8 @@ public class Player : MonoBehaviour
         defaultFriction = collider.sharedMaterial.dynamicFriction;
         driftTrails = this.GetComponentsInChildren<TrailRenderer>("drift-trail");
         speedParticle = GetComponentsInChildren<Transform>().Where(x => x.name == "speed-particle").First().gameObject;
+        improveWheelMeshs = this.GetComponentsInChildren<MeshRenderer>("improve-wheel");
+        engineUpgradeMeshs = this.GetComponentsInChildren<MeshRenderer>("engine-upgrade");
         speedParticle.SetActive(false);
         curMaxSpeed = maxSpeed;
     }
@@ -65,15 +63,20 @@ public class Player : MonoBehaviour
         orientation.Rotate(0, Input.GetAxis("Horizontal") * curSteerSpeed * Time.deltaTime, 0);
 
         var velY = rigidbody.velocity.y;
-        rigidbody.velocity = Vector3.ClampMagnitude(new Vector3(rigidbody.velocity.x, 0, rigidbody.velocity.z), curMaxSpeed);
+        float mul = 1;
+        if (UpgradeManager.Instance.EngineStep == 1) mul = 1.1f;
+        if (UpgradeManager.Instance.EngineStep == 2) mul = 1.25f;
+        rigidbody.velocity = Vector3.ClampMagnitude(new Vector3(rigidbody.velocity.x, 0, rigidbody.velocity.z), curMaxSpeed * mul);
         rigidbody.velocity = new Vector3(rigidbody.velocity.x, velY, rigidbody.velocity.z);
+
+        improveWheelMeshs.ForEach(x => x.gameObject.SetActive(UpgradeManager.Instance.ImprovedWheel));
+        engineUpgradeMeshs.For((x, index) => x.gameObject.SetActive(UpgradeManager.Instance.EngineStep == index + 1));
     }
 
     private void FixedUpdate()
     {
         if (!GameManager.Instance.IsGameRunning) return;
-
-        rigidbody.AddForce(Input.GetAxisRaw("Vertical") * model.forward * acc, ForceMode.Acceleration);
+        rigidbody.AddForce(Input.GetAxisRaw("Vertical") * model.forward * acc * (UpgradeManager.Instance.ImprovedWheel ? 1.25f : 1), ForceMode.Acceleration);
     }
 
     private void SetFriction(float friction)
@@ -93,13 +96,12 @@ public class Player : MonoBehaviour
             {
                 switch (item)
                 {
-                    case ItemType.Money10: Money += 10; break;
-                    case ItemType.Money50: Money += 50;  break;
-                    case ItemType.Money100: Money += 100;  break;
+                    case ItemType.Money10: UpgradeManager.Instance.Money += 10; break;
+                    case ItemType.Money50: UpgradeManager.Instance.Money += 50;  break;
+                    case ItemType.Money100: UpgradeManager.Instance.Money += 100;  break;
                     case ItemType.SpeedFast: StartCoroutine(SpeedFastRoutine()); break;
                     case ItemType.SpeedSuperFast: StartCoroutine(SpeedSuperFastRoutine()); break;
-                    case ItemType.JoinShop:
-                        break;
+                    case ItemType.JoinShop: UpgradeManager.Instance.Display(); break;
                     case ItemType.EndEnum:
                         break;
                 }
@@ -110,7 +112,7 @@ public class Player : MonoBehaviour
     private IEnumerator SpeedFastRoutine()
     {
         speedParticle.SetActive(true);
-        TweenUtility.DOFloat(curMaxSpeed, fastMaxSpeed, 0.5f, x => curMaxSpeed = x);
+        TweenUtility.DOFloat(curMaxSpeed, maxSpeed * 1.5f, 0.5f, x => curMaxSpeed = x);
         yield return new WaitForSeconds(3f);
         TweenUtility.DOFloat(curMaxSpeed, maxSpeed, 0.5f, x => curMaxSpeed = x);
         speedParticle.SetActive(false);
@@ -119,7 +121,7 @@ public class Player : MonoBehaviour
     private IEnumerator SpeedSuperFastRoutine()
     {
         speedParticle.SetActive(true);
-        TweenUtility.DOFloat(curMaxSpeed, superFastMaxSpeed, 0.5f, x => curMaxSpeed = x);
+        TweenUtility.DOFloat(curMaxSpeed, maxSpeed * 2, 0.5f, x => curMaxSpeed = x);
         yield return new WaitForSeconds(3f);
         TweenUtility.DOFloat(curMaxSpeed, maxSpeed, 0.5f, x => curMaxSpeed = x);
         speedParticle.SetActive(false);
