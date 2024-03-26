@@ -5,20 +5,24 @@ using UnityEngine.AI;
 
 public class Enemy : MonoBehaviour
 {
-    private bool isMoving;
-    private NavMeshAgent agent;
+    [SerializeField] private NavMeshAgent followTarget;
 
-    private void Awake()
+    private bool isMoving;
+    private new Rigidbody rigidbody;
+
+    private void Start()
     {
-        agent = GetComponent<NavMeshAgent>();
+        rigidbody = GetComponent<Rigidbody>();
+        GameManager.Instance.ObserveEveryValueChanged(x => x.IsGameRunning)
+            .Subscribe(x =>
+            {
+                if (!x) return;
+                followTarget.SetDestination(GameManager.Instance.EndPoint.position);
+            });
     }
 
     private void Update()
     {
-        if(!isMoving && GameManager.Instance.IsGameRunning)
-        {
-            isMoving = true;
-            agent.SetDestination(GameManager.Instance.EndPoint.position);
-        }
+        
     }
 }
