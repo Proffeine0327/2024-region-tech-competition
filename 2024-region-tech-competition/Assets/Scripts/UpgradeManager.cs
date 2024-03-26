@@ -3,8 +3,11 @@ using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
 
-public class UpgradeManager : Singleton<UpgradeManager>
+public class UpgradeManager : MonoBehaviour
 {
+    private static UpgradeManager instance;
+    public static UpgradeManager Instance => instance ??= FindAnyObjectByType<UpgradeManager>();
+
     [SerializeField] private Image panel;
     [SerializeField] private List<GameObject> blinders;
     [SerializeField] private TextMeshProUGUI title;
@@ -31,10 +34,22 @@ public class UpgradeManager : Singleton<UpgradeManager>
             switch (select)
             {
                 case 0:
-                    if (selectable[0]) ImprovedWheel = true;
+                    if (selectable[0])
+                    {
+                        ImprovedWheel = true;
+                        Money -= 150;
+                    }
                     break;
                 case 1:
-                    if (selectable[1]) EngineStep++;
+                    if (selectable[1])
+                    {
+                        switch (EngineStep)
+                        {
+                            case 0: Money -= 100; break;
+                            case 1: Money -= 200; break;
+                        }
+                        EngineStep++;
+                    }
                     break;
             }
         }

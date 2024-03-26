@@ -3,23 +3,21 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-public class Player : Singleton<Player>
+public class Player : BaseFlighter
 {
+    private static Player instance;
+    public static Player Instance => instance ??= FindAnyObjectByType<Player>();
+
     [SerializeField] private Transform orientation;
-    [SerializeField] private Transform model;
     [SerializeField] private LayerMask modelAlignLayer;
     [SerializeField] private float acc;
     [SerializeField] private float maxSpeed;
     [SerializeField] private float steerSpeed;
     [SerializeField] private float driftSteerSpeed;
 
-    private bool canMove = true;
-    private bool isSliping;
-    private float defaultFriction;
     private float curMaxSpeed;
     private float curSteerSpeed;
     private new Rigidbody rigidbody;
-    private new Collider collider;
     private List<TrailRenderer> driftTrails;
     private GameObject speedParticle;
     private List<MeshRenderer> improveWheelMeshs;
@@ -27,13 +25,11 @@ public class Player : Singleton<Player>
 
     public Transform Orientation => orientation;
     public float Speed => rigidbody?.velocity.magnitude ?? 0;
-    public bool IsSliping => isSliping;
 
-    private void Start()
+    protected override void Start()
     {
+        base.Start();
         rigidbody = GetComponent<Rigidbody>();
-        collider = GetComponent<Collider>();
-        defaultFriction = collider.sharedMaterial.dynamicFriction;
         driftTrails = this.GetComponentsInChildren<TrailRenderer>("drift-trail");
         speedParticle = GetComponentsInChildren<Transform>().Where(x => x.name == "speed-particle").First().gameObject;
         improveWheelMeshs = this.GetComponentsInChildren<MeshRenderer>("improve-wheel");
@@ -66,7 +62,7 @@ public class Player : Singleton<Player>
         float mul = 1;
         if (UpgradeManager.Instance.EngineStep == 1) mul = 1.1f;
         if (UpgradeManager.Instance.EngineStep == 2) mul = 1.25f;
-        rigidbody.velocity = Vector3.ClampMagnitude(new Vector3(rigidbody.velocity.x, 0, rigidbody.velocity.z), curMaxSpeed * mul);
+        rigidbody.velocity = Vector3.ClampMagnitude(new Vector3(rigidbody.velocity.x, 0, rigidbody.velocity.z), curMaxSpeed * mul * slow);
         rigidbody.velocity = new Vector3(rigidbody.velocity.x, velY, rigidbody.velocity.z);
 
         improveWheelMeshs.ForEach(x => x.gameObject.SetActive(UpgradeManager.Instance.ImprovedWheel));
@@ -79,16 +75,9 @@ public class Player : Singleton<Player>
         rigidbody.AddForce(Input.GetAxisRaw("Vertical") * model.forward * acc * (UpgradeManager.Instance.ImprovedWheel ? 1.25f : 1), ForceMode.Acceleration);
     }
 
-    private void SetFriction(float friction)
+    protected override void OnTriggerEnter(Collider other)
     {
-        collider.sharedMaterial.staticFriction = friction;
-        collider.sharedMaterial.dynamicFriction = friction;
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("SlipArea") && !isSliping)
-            StartCoroutine(SlipRoutine());
+        base.OnTriggerEnter(other);
         if (other.CompareTag("Item") && !ItemManager.Instance.IsPickingItem)
         {
             Destroy(other.gameObject);
@@ -97,13 +86,12 @@ public class Player : Singleton<Player>
                 switch (item)
                 {
                     case ItemType.Money10: UpgradeManager.Instance.Money += 10; break;
-                    case ItemType.Money50: UpgradeManager.Instance.Money += 50;  break;
-                    case ItemType.Money100: UpgradeManager.Instance.Money += 100;  break;
+                    case ItemType.Money50: UpgradeManager.Instance.Money += 50; break;
+                    case ItemType.Money100: UpgradeManager.Instance.Money += 100; break;
                     case ItemType.SpeedFast: StartCoroutine(SpeedFastRoutine()); break;
                     case ItemType.SpeedSuperFast: StartCoroutine(SpeedSuperFastRoutine()); break;
                     case ItemType.JoinShop: UpgradeManager.Instance.Display(); break;
-                    case ItemType.EndEnum:
-                        break;
+                    case ItemType.EndEnum: break;
                 }
             });
         }
@@ -125,21 +113,5 @@ public class Player : Singleton<Player>
         yield return new WaitForSeconds(3f);
         TweenUtility.DOFloat(curMaxSpeed, maxSpeed, 0.5f, x => curMaxSpeed = x);
         speedParticle.SetActive(false);
-    }
-
-    private IEnumerator SlipRoutine()
-    {
-        canMove = false;
-        isSliping = true;
-        SetFriction(0.05f);
-        
-        var dir = Input.GetAxis("Horizontal") > 0 ? 1 : -1;
-        model.rotation = Quaternion.Euler(0, 0, 0);
-        model.DOLocalRotate(new Vector3(0, dir * 1080, 0), 2f, Ease.OutQuad);
-        yield return new WaitForSeconds(2f);
-        model.localRotation = Quaternion.Euler(Vector3.zero);
-        SetFriction(defaultFriction);
-        isSliping = false;
-        canMove = true;
     }
 }
