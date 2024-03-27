@@ -2,29 +2,34 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using System;
 
 public class Player : BaseFlighter
 {
     private static Player instance;
     public static Player Instance => instance ??= FindAnyObjectByType<Player>();
 
-    [SerializeField] private Transform orientation;
-    [SerializeField] private LayerMask modelAlignLayer;
-    [SerializeField] private float acc;
-    [SerializeField] private float maxSpeed;
-    [SerializeField] private float steerSpeed;
-    [SerializeField] private float driftSteerSpeed;
+    private DataManager dataManager => DataManager.Instance;
 
-    private float curMaxSpeed;
-    private float curSteerSpeed;
-    private new Rigidbody rigidbody;
-    private List<TrailRenderer> driftTrails;
-    private GameObject speedParticle;
-    private List<MeshRenderer> improveWheelMeshs;
-    private List<MeshRenderer> engineUpgradeMeshs;
+    public Transform orientation;
+    public LayerMask modelAlignLayer;
+    public float acc;
+    public float maxSpeed;
+    public float steerSpeed;
+    public float driftSteerSpeed;
 
-    public Transform Orientation => orientation;
-    public float Speed => rigidbody?.velocity.magnitude ?? 0;
+    [NonSerialized] public int money;
+    [NonSerialized] public float curMaxSpeed;
+    [NonSerialized] public float curSteerSpeed;
+    [NonSerialized] public new Rigidbody rigidbody;
+    [NonSerialized] public List<TrailRenderer> driftTrails;
+    [NonSerialized] public GameObject speedParticle;
+    [NonSerialized] public List<MeshRenderer> improveWheelMeshs;
+    [NonSerialized] public List<MeshRenderer> engineUpgradeMeshs;
+
+    public float DisplaySpeed => rigidbody.velocity.magnitude * 5;
+    public float DisplayMaxSpeed => maxSpeed * 5;
+    public float DisplaySteerSpeed => steerSpeed * 5;
 
     protected override void Start()
     {
@@ -60,19 +65,19 @@ public class Player : BaseFlighter
 
         var velY = rigidbody.velocity.y;
         float mul = 1;
-        if (UpgradeManager.Instance.EngineStep == 1) mul = 1.1f;
-        if (UpgradeManager.Instance.EngineStep == 2) mul = 1.25f;
+        if (dataManager.engine == EngineType.Engine6) mul = 1.1f;
+        if (dataManager.engine == EngineType.Engine8) mul = 1.25f;
         rigidbody.velocity = Vector3.ClampMagnitude(new Vector3(rigidbody.velocity.x, 0, rigidbody.velocity.z), curMaxSpeed * mul * slow);
         rigidbody.velocity = new Vector3(rigidbody.velocity.x, velY, rigidbody.velocity.z);
 
-        improveWheelMeshs.ForEach(x => x.gameObject.SetActive(UpgradeManager.Instance.ImprovedWheel));
-        engineUpgradeMeshs.For((x, index) => x.gameObject.SetActive(UpgradeManager.Instance.EngineStep == index + 1));
+        //improveWheelMeshs.ForEach(x => x.gameObject.SetActive((dataManager.wingType & WingType.Desert) != 0));
+        //engineUpgradeMeshs.For((x, index) => x.gameObject.SetActive((dataManager.engineType & (EngineType)(index - 1)) != 0));
     }
 
     private void FixedUpdate()
     {
         if (!GameManager.Instance.IsGameRunning) return;
-        rigidbody.AddForce(Input.GetAxisRaw("Vertical") * model.forward * acc * (UpgradeManager.Instance.ImprovedWheel ? 1.25f : 1), ForceMode.Acceleration);
+        //rigidbody.AddForce(Input.GetAxisRaw("Vertical") * model.forward * acc * (dataManager. == 1 ? 1.25f : 1), ForceMode.Acceleration);
     }
 
     protected override void OnTriggerEnter(Collider other)
@@ -85,12 +90,12 @@ public class Player : BaseFlighter
             {
                 switch (item)
                 {
-                    case ItemType.Money10: UpgradeManager.Instance.Money += 10; break;
-                    case ItemType.Money50: UpgradeManager.Instance.Money += 50; break;
-                    case ItemType.Money100: UpgradeManager.Instance.Money += 100; break;
+                    case ItemType.Money10: money += 10; break;
+                    case ItemType.Money50: money += 50; break;
+                    case ItemType.Money100: money += 100; break;
                     case ItemType.SpeedFast: StartCoroutine(SpeedFastRoutine()); break;
                     case ItemType.SpeedSuperFast: StartCoroutine(SpeedSuperFastRoutine()); break;
-                    case ItemType.JoinShop: UpgradeManager.Instance.Display(); break;
+                    //case ItemType.JoinShop: UpgradeManager.Instance.Display(); break;
                     case ItemType.EndEnum: break;
                 }
             });

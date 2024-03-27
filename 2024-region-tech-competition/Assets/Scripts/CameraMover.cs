@@ -12,10 +12,10 @@ public class CameraMover : MonoBehaviour
 
     void FixedUpdate()
     {
-        var targetPos = player.Orientation.TransformPoint(posOffset);
+        var targetPos = player.orientation.TransformPoint(posOffset);
         transform.position = Vector3.Lerp(transform.position, targetPos, speed);
 
-        var dir = player.Orientation.position - transform.position;
+        var dir = player.orientation.position - transform.position;
         var targetRot = Quaternion.LookRotation(dir + lookOffset, Vector3.up);
         transform.rotation = Quaternion.Lerp(transform.rotation, targetRot, speed);
     }
