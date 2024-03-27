@@ -1,29 +1,30 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class GameManager : MonoBehaviour
 {
     private static GameManager instance;
     public static GameManager Instance => instance ??= FindAnyObjectByType<GameManager>();
 
-    [SerializeField] private Transform endPoint;
+    public GameStartWaitCounter startWaitCounter;
+    public GameClearDisplayer clearDisplayer;
+    public GameOverDisplayer overDisplayer;
+    public Transform endPoint;
+    public int stage;
 
     private BaseFlighter endFlighter;
 
-    public bool IsGameRunning { get; private set; }
-    public bool IsGameOver { get; private set; }
-    public bool IsGameClear {  get; private set; }
-    public Observer<int> WaitCount { get; private set; } = new() { Value = -1 };
-    public Transform EndPoint => endPoint;
-    public float PlayTime { get; private set; }
+    [NonSerialized] public bool isGameRunning;
+    [NonSerialized] public float playTime;
 
     public void GameEnd(BaseFlighter end)
     {
         if (endFlighter != null) return;
 
         endFlighter = end;
-        IsGameRunning = false;
+        isGameRunning = false;
     }
 
     private void Start()
@@ -33,25 +34,25 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        if (IsGameRunning)
-            PlayTime += Time.deltaTime;
+        if (isGameRunning)
+            playTime += Time.deltaTime;
     }
 
     private IEnumerator GameRoutine()
     {
         yield return new WaitForSeconds(3f);
-        WaitCount.Value = 3;
+        startWaitCounter.Display(3);
         yield return new WaitForSeconds(1f);
-        WaitCount.Value = 2;
+        startWaitCounter.Display(2);
         yield return new WaitForSeconds(1f);
-        WaitCount.Value = 1;
+        startWaitCounter.Display(1);        
         yield return new WaitForSeconds(1f);
-        WaitCount.Value = 0;
+        startWaitCounter.Display(0);                
+        isGameRunning = true;
 
-        IsGameRunning = true;
-        yield return new WaitUntil(() => !IsGameRunning);
+        yield return new WaitUntil(() => !isGameRunning);
         yield return new WaitForSeconds(3f);
-        if(endFlighter is Player) IsGameClear = true;
-        if (endFlighter is Enemy) IsGameOver = true;
+        if (endFlighter is Player) clearDisplayer.Display();
+        if (endFlighter is Enemy) overDisplayer.Display();
     }
 }

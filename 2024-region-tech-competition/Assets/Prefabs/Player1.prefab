@@ -10294,7 +10294,7 @@ GameObject:
   - component: {fileID: 3280180580537374986}
   - component: {fileID: 3280180580537374984}
   m_Layer: 0
-  m_Name: upgrade-preview
+  m_Name: upgrade-preview-cam
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10534,6 +10534,7 @@ GameObject:
   - component: {fileID: 125652559737658185}
   - component: {fileID: 4776783353483097050}
   - component: {fileID: 5889922752532134085}
+  - component: {fileID: 2134478993807748539}
   m_Layer: 8
   m_Name: model
   m_TagString: Untagged
@@ -10612,6 +10613,28 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &2134478993807748539
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8208690577071673573}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8ec53cdd1a26eb4ab3762dc273509a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speedParticle: {fileID: 3280180579028582045}
+  improveWings:
+  - {fileID: 2321112319919134497}
+  - {fileID: 3280180580143711586}
+  engineUpgrades:
+  - {fileID: 2461794019405754630}
+  - {fileID: 3280180579729984351}
+  driftTrails:
+  - {fileID: 3280180580155245235}
+  - {fileID: 3280180580616982693}
 --- !u!1001 &3280180580988620208
 PrefabInstance:
   m_ObjectHideFlags: 0

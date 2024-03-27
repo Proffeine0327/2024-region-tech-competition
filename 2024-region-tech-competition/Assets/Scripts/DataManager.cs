@@ -14,10 +14,6 @@ public class DataManager : MonoBehaviour
 {
     public static DataManager Instance { get; private set; }
 
-    public List<Player> playerPrefabs;
-    public List<Enemy> enemyPrefabs;
-    public List<Material> playerColors;
-
     [NonSerialized] public int playerSelect;
     [NonSerialized] public int playerColorSelect;
     [NonSerialized] public bool desertWing;
@@ -27,7 +23,7 @@ public class DataManager : MonoBehaviour
 
     private void Awake()
     {
-        if(Instance != null)
+        if(Instance == null)
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);

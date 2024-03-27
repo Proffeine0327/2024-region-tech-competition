@@ -20,7 +20,7 @@ public class Enemy : BaseFlighter
 
     private void Update()
     {
-        if (!GameManager.Instance.IsGameRunning) return;
+        if (!GameManager.Instance.isGameRunning) return;
         if (!isMoving)
         {
             isMoving = true;
@@ -28,7 +28,7 @@ public class Enemy : BaseFlighter
         }
 
         followTarget.enabled = Vector3.Distance(transform.position, followTarget.transform.position) < 40;
-        if(followTarget.isActiveAndEnabled) followTarget.SetDestination(GameManager.Instance.EndPoint.position);
+        if(followTarget.isActiveAndEnabled) followTarget.SetDestination(GameManager.Instance.endPoint.position);
         
         var vely = rigidbody.velocity.y;
         rigidbody.velocity = Vector3.ClampMagnitude(new Vector3(rigidbody.velocity.x, 0, rigidbody.velocity.z), maxSpeed * slow);
@@ -37,7 +37,7 @@ public class Enemy : BaseFlighter
 
     private void FixedUpdate()
     {
-        if (!GameManager.Instance.IsGameRunning) return;
+        if (!GameManager.Instance.isGameRunning) return;
         if (!canMove) return;
 
         if (Vector3.Distance(followTarget.transform.position, transform.position) > 2f)

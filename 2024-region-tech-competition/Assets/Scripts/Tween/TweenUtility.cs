@@ -2,35 +2,8 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 
-public enum Ease { None, InQuad, OutQuad, InQuart, OutQuart, InBack, OutBack }
-
 public static class TweenUtility
 {
-    public static float GetEaseValue(Ease ease, float x)
-    {
-        switch (ease)
-        {
-            case Ease.None: return x;
-            case Ease.InQuad: return x * x;
-            case Ease.OutQuad: return 1 - Mathf.Pow(1 - x, 2);
-            case Ease.InQuart: return Mathf.Pow(x, 4);
-            case Ease.OutQuart: return 1 - Mathf.Pow(1 - x, 4);
-            case Ease.InBack:
-                {
-                    var c1 = 1.70158f;
-                    var c3 = c1 + 1;
-                    return c3 * Mathf.Pow(x, 3) - c1 * Mathf.Pow(x, 2);
-                }
-            case Ease.OutBack:
-                {
-                    var c1 = 1.70158f;
-                    var c3 = c1 + 1;
-                    return 1 + c3 * Mathf.Pow(x - 1, 3) + c1 * Mathf.Pow(x - 1, 2);
-                }
-            default: return x;
-        }
-    }
-
     public static void DOFloat(float from, float to, float duration, Action<float> apply, Ease ease = Ease.None, UpdateType updateType = UpdateType.Coroutine)
         => TweenInvoker.Instance.DOFloat(from, to, duration, apply, ease, updateType);
 

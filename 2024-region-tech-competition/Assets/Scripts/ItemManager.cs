@@ -31,7 +31,7 @@ public class ItemManager : MonoBehaviour
         isPickingItem = true;
         mask.SetActive(true);
         var item = Random.Range(0, (int)ItemType.EndEnum);
-        slotGroup.DOAnchorMove(new Vector2(0, 150 * item), 1.5f, Ease.OutQuart);
+        slotGroup.DOAnchorMove(new Vector2(0, 150 * item), 1.5f, Ease.OutQuad);
         yield return new WaitForSeconds(1.5f);
         action?.Invoke((ItemType)item);
 

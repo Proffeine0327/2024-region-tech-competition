@@ -9,6 +9,6 @@ public class PlayTimeDisplayer : MonoBehaviour
 
     private void Update()
     {
-        tmp.text = GameManager.Instance.PlayTime.ToString("0.00");
+        tmp.text = GameManager.Instance.playTime.ToString("0.00");
     }
 }

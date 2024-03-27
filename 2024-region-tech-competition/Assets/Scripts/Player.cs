@@ -10,6 +10,7 @@ public class Player : BaseFlighter
     public static Player Instance => instance ??= FindAnyObjectByType<Player>();
 
     private DataManager dataManager => DataManager.Instance;
+    private GameManager gameManager => GameManager.Instance;
 
     public Transform orientation;
     public LayerMask modelAlignLayer;
@@ -22,10 +23,8 @@ public class Player : BaseFlighter
     [NonSerialized] public float curMaxSpeed;
     [NonSerialized] public float curSteerSpeed;
     [NonSerialized] public new Rigidbody rigidbody;
-    [NonSerialized] public List<TrailRenderer> driftTrails;
-    [NonSerialized] public GameObject speedParticle;
-    [NonSerialized] public List<MeshRenderer> improveWheelMeshs;
-    [NonSerialized] public List<MeshRenderer> engineUpgradeMeshs;
+    [NonSerialized] public PlayerModel playerModel;
+
 
     public float DisplaySpeed => rigidbody.velocity.magnitude * 5;
     public float DisplayMaxSpeed => maxSpeed * 5;
@@ -35,11 +34,7 @@ public class Player : BaseFlighter
     {
         base.Start();
         rigidbody = GetComponent<Rigidbody>();
-        driftTrails = this.GetComponentsInChildren<TrailRenderer>("drift-trail");
-        speedParticle = GetComponentsInChildren<Transform>().Where(x => x.name == "speed-particle").First().gameObject;
-        improveWheelMeshs = this.GetComponentsInChildren<MeshRenderer>("improve-wheel");
-        engineUpgradeMeshs = this.GetComponentsInChildren<MeshRenderer>("engine-upgrade");
-        speedParticle.SetActive(false);
+        playerModel = model.GetComponent<PlayerModel>();
         curMaxSpeed = maxSpeed;
     }
 
@@ -48,36 +43,37 @@ public class Player : BaseFlighter
         Physics.Raycast(model.position, Vector3.down, out var hit, 10f, modelAlignLayer);
         model.rotation = Quaternion.Lerp(model.rotation, Quaternion.FromToRotation(Vector3.up, hit.normal) * orientation.rotation, Time.deltaTime * 3);
 
-        if (!GameManager.Instance.IsGameRunning) return;
+        if (!GameManager.Instance.isGameRunning) return;
         if (!canMove) return;
 
-        if (Input.GetKey(KeyCode.LeftShift))
-        {
-            driftTrails.ForEach(t => t.gameObject.SetActive(true));
-            curSteerSpeed = Mathf.Lerp(curSteerSpeed, driftSteerSpeed, Time.deltaTime * 2f);
-        }
-        else
-        {
-            driftTrails.ForEach(t => t.gameObject.SetActive(false));
-            curSteerSpeed = Mathf.Lerp(curSteerSpeed, steerSpeed, Time.deltaTime * 2f);
-        }
+        playerModel.isDrift = Input.GetKey(KeyCode.LeftShift);
+        curSteerSpeed = Mathf.Lerp(curSteerSpeed, Input.GetKey(KeyCode.LeftShift) ? driftSteerSpeed : steerSpeed, Time.deltaTime * 2f);
+
         orientation.Rotate(0, Input.GetAxis("Horizontal") * curSteerSpeed * Time.deltaTime, 0);
 
         var velY = rigidbody.velocity.y;
-        float mul = 1;
-        if (dataManager.engine == EngineType.Engine6) mul = 1.1f;
-        if (dataManager.engine == EngineType.Engine8) mul = 1.25f;
+        float mul = dataManager.engine switch
+        {
+            EngineType.Engine6 => 1.1f,
+            EngineType.Engine8 => 1.25f,
+            _ => 1
+        };
         rigidbody.velocity = Vector3.ClampMagnitude(new Vector3(rigidbody.velocity.x, 0, rigidbody.velocity.z), curMaxSpeed * mul * slow);
         rigidbody.velocity = new Vector3(rigidbody.velocity.x, velY, rigidbody.velocity.z);
-
-        //improveWheelMeshs.ForEach(x => x.gameObject.SetActive((dataManager.wingType & WingType.Desert) != 0));
-        //engineUpgradeMeshs.For((x, index) => x.gameObject.SetActive((dataManager.engineType & (EngineType)(index - 1)) != 0));
     }
 
     private void FixedUpdate()
     {
-        if (!GameManager.Instance.IsGameRunning) return;
-        //rigidbody.AddForce(Input.GetAxisRaw("Vertical") * model.forward * acc * (dataManager. == 1 ? 1.25f : 1), ForceMode.Acceleration);
+        if (!GameManager.Instance.isGameRunning) return;
+
+        var displayWheel = gameManager.stage switch
+        {
+            1 => dataManager.desertWing,
+            2 => dataManager.mountainWing,
+            3 => dataManager.cityWing,
+            _ => false
+        };
+        rigidbody.AddForce(Input.GetAxisRaw("Vertical") * model.forward * acc * (displayWheel ? 1.25f : 1), ForceMode.Acceleration);
     }
 
     protected override void OnTriggerEnter(Collider other)
@@ -104,19 +100,19 @@ public class Player : BaseFlighter
 
     private IEnumerator SpeedFastRoutine()
     {
-        speedParticle.SetActive(true);
+        playerModel.isSpeed = true;
         TweenUtility.DOFloat(curMaxSpeed, maxSpeed * 1.5f, 0.5f, x => curMaxSpeed = x);
         yield return new WaitForSeconds(3f);
         TweenUtility.DOFloat(curMaxSpeed, maxSpeed, 0.5f, x => curMaxSpeed = x);
-        speedParticle.SetActive(false);
+        playerModel.isSpeed = false;
     }
 
     private IEnumerator SpeedSuperFastRoutine()
     {
-        speedParticle.SetActive(true);
+        playerModel.isSpeed = true;
         TweenUtility.DOFloat(curMaxSpeed, maxSpeed * 2, 0.5f, x => curMaxSpeed = x);
         yield return new WaitForSeconds(3f);
         TweenUtility.DOFloat(curMaxSpeed, maxSpeed, 0.5f, x => curMaxSpeed = x);
-        speedParticle.SetActive(false);
+        playerModel.isSpeed = false;
     }
 }
