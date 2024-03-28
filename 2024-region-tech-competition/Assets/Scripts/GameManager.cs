@@ -8,6 +8,10 @@ public class GameManager : MonoBehaviour
     private static GameManager instance;
     public static GameManager Instance => instance ??= FindAnyObjectByType<GameManager>();
 
+    private Player player => Player.Instance;
+    private DataManager dataManager => DataManager.Instance;
+    private ResourceLoader resourceLoader => ResourceLoader.Instance;
+
     public GameStartWaitCounter startWaitCounter;
     public GameClearDisplayer clearDisplayer;
     public GameOverDisplayer overDisplayer;
@@ -25,6 +29,12 @@ public class GameManager : MonoBehaviour
 
         endFlighter = end;
         isGameRunning = false;
+    }
+
+    private void Awake()
+    {
+        player.playerModel = Instantiate(resourceLoader.playerModels[dataManager.playerSelect], player.orientation);
+        player.playerModel.transform.localPosition = Vector3.zero;
     }
 
     private void Start()

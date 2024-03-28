@@ -25,7 +25,6 @@ public class Player : BaseFlighter
     [NonSerialized] public new Rigidbody rigidbody;
     [NonSerialized] public PlayerModel playerModel;
 
-
     public float DisplaySpeed => rigidbody.velocity.magnitude * 5;
     public float DisplayMaxSpeed => maxSpeed * 5;
     public float DisplaySteerSpeed => steerSpeed * 5;

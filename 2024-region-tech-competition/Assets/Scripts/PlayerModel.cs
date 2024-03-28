@@ -18,16 +18,19 @@ public class PlayerModel : MonoBehaviour
 
     private void Update()
     {
-        var displayWheel = gameManager.stage switch
+        if (gameManager)
         {
-            1 => dataManager.desertWing,
-            2 => dataManager.mountainWing,
-            3 => dataManager.cityWing,
-            _ => false
-        };
+            var displayWheel = gameManager.stage switch
+            {
+                1 => dataManager.desertWing,
+                2 => dataManager.mountainWing,
+                3 => dataManager.cityWing,
+                _ => false
+            };
 
-        improveWings.ForEach(x => x.gameObject.SetActive(displayWheel));
-        engineUpgrades.For((x, index) => x.gameObject.SetActive(dataManager.engine == (EngineType)(index - 1)));
+            improveWings.ForEach(x => x.gameObject.SetActive(displayWheel));
+            engineUpgrades.For((x, index) => x.gameObject.SetActive(dataManager.engine == (EngineType)(index - 1)));
+        }
         driftTrails.ForEach(x => x.SetActive(isDrift));
         speedParticle.SetActive(isSpeed);
     }
