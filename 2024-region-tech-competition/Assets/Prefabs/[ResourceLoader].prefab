@@ -48,3 +48,10 @@ MonoBehaviour:
   - {fileID: 4875986815525842594, guid: eef5684034b4fc14bae7dd99f0987a45, type: 3}
   - {fileID: 4875986815525842594, guid: 5d702c1b845eb3f4d8fa744525af225c, type: 3}
   - {fileID: 4875986815525842594, guid: b4f5cd978dd6e4d409bbb12fbd2bb81c, type: 3}
+  playerColors:
+  - {fileID: 2100000, guid: 06d0429a6d272b6408e25eaa692b7f0e, type: 2}
+  - {fileID: 2100000, guid: 715f582ebaab8fd4d830d3cada1b1778, type: 2}
+  - {fileID: 2100000, guid: 2ecc20c976ded4d45904ecd5d140a333, type: 2}
+  - {fileID: 2100000, guid: 17f44d5a088de5947ac77dbe8d290b62, type: 2}
+  - {fileID: 2100000, guid: d8360a959ed245340906b18422806d8e, type: 2}
+  - {fileID: 2100000, guid: 946a9c938218c934184de4158d337dfd, type: 2}

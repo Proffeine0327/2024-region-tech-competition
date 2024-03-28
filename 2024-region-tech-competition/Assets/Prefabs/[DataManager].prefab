@@ -44,3 +44,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf0b90e3c0340d045bdaf316f2e85be6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerDatas:
+  - unlockMoney: 100
+    acceleration: 22.5
+    maxSpeed: 35
+    steerSpeed: 30
+    driftSteerSpeed: 120
+  - unlockMoney: 150
+    acceleration: 25
+    maxSpeed: 40
+    steerSpeed: 30
+    driftSteerSpeed: 120
+  - unlockMoney: 200
+    acceleration: 30
+    maxSpeed: 45
+    steerSpeed: 30
+    driftSteerSpeed: 120

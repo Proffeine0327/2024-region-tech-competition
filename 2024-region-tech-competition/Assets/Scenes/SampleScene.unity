@@ -2509,6 +2509,63 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   display: {x: 0, y: -370}
   hide: {x: 260, y: -370}
+--- !u!1001 &470433733
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4946173923656322300, guid: e5e0ac6d0b88ee640be22a85d4adf139, type: 3}
+      propertyPath: m_RootOrder
+      value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: 4946173923656322300, guid: e5e0ac6d0b88ee640be22a85d4adf139, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 1.5346152
+      objectReference: {fileID: 0}
+    - target: {fileID: 4946173923656322300, guid: e5e0ac6d0b88ee640be22a85d4adf139, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -1.219733
+      objectReference: {fileID: 0}
+    - target: {fileID: 4946173923656322300, guid: e5e0ac6d0b88ee640be22a85d4adf139, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.040951267
+      objectReference: {fileID: 0}
+    - target: {fileID: 4946173923656322300, guid: e5e0ac6d0b88ee640be22a85d4adf139, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4946173923656322300, guid: e5e0ac6d0b88ee640be22a85d4adf139, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4946173923656322300, guid: e5e0ac6d0b88ee640be22a85d4adf139, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4946173923656322300, guid: e5e0ac6d0b88ee640be22a85d4adf139, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4946173923656322300, guid: e5e0ac6d0b88ee640be22a85d4adf139, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4946173923656322300, guid: e5e0ac6d0b88ee640be22a85d4adf139, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4946173923656322300, guid: e5e0ac6d0b88ee640be22a85d4adf139, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4946173923656322301, guid: e5e0ac6d0b88ee640be22a85d4adf139, type: 3}
+      propertyPath: m_Name
+      value: '[ResourceLoader]'
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: e5e0ac6d0b88ee640be22a85d4adf139, type: 3}
 --- !u!1 &543607573
 GameObject:
   m_ObjectHideFlags: 0
@@ -9961,10 +10018,6 @@ MonoBehaviour:
   modelAlignLayer:
     serializedVersion: 2
     m_Bits: 64
-  acc: 22.5
-  maxSpeed: 35
-  steerSpeed: 30
-  driftSteerSpeed: 120
 --- !u!54 &1860889841
 Rigidbody:
   m_ObjectHideFlags: 0

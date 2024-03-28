@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CameraMover : MonoBehaviour
+public class GameCameraMover : MonoBehaviour
 {
     [SerializeField] private Vector3 posOffset;
     [SerializeField] private Vector3 lookOffset;

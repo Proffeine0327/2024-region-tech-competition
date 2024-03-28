@@ -9,7 +9,8 @@ public class ResourceLoader : MonoBehaviour
 {
     public static ResourceLoader Instance { get; private set; }
 
-    public List<PlayerModel> playerModels = new();
+    public List<PlayerModel> playerModels;
+    public List<Material> playerColors;
 
     private void Awake()
     {

@@ -9,6 +9,6 @@ public class SpeedDisplayer : MonoBehaviour
 
     private void Update()
     {
-        text.text = (Player.Instance.DisplaySpeed).ToString("#,##0.0");
+        text.text = (Player.Instance.Speed * 5).ToString("#,##0.0");
     }
 }

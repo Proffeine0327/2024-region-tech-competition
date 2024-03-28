@@ -29,13 +29,13 @@ public class TweenInvoker : MonoBehaviour
     [SerializeField] private AnimationCurve inBack;
     [SerializeField] private AnimationCurve outBack;
 
-    public void DOFloat(float sValue, float eValue, float time, Action<float> x, Ease ease = Ease.None, UpdateType updateType = UpdateType.Coroutine)
+    public Coroutine DOFloat(float sValue, float eValue, float time, Action<float> x, Ease ease = Ease.None, UpdateType updateType = UpdateType.Coroutine)
         => StartCoroutine(FloatTween(sValue, eValue, time, x, ease, updateType));
-    public void DOVector2(Vector2 sValue, Vector2 eValue, float time, Action<Vector2> x, Ease ease = Ease.None, UpdateType updateType = UpdateType.Coroutine)
+    public Coroutine DOVector2(Vector2 sValue, Vector2 eValue, float time, Action<Vector2> x, Ease ease = Ease.None, UpdateType updateType = UpdateType.Coroutine)
         => StartCoroutine(Vector2Tween(sValue, eValue, time, x, ease, updateType));
-    public void DOVector3(Vector3 sValue, Vector3 eValue, float time, Action<Vector3> x, Ease ease = Ease.None, UpdateType updateType = UpdateType.Coroutine)
+    public Coroutine DOVector3(Vector3 sValue, Vector3 eValue, float time, Action<Vector3> x, Ease ease = Ease.None, UpdateType updateType = UpdateType.Coroutine)
         => StartCoroutine(Vector3Tween(sValue, eValue, time, x, ease, updateType));
-    public void DOColor(Color sValue, Color eValue, float time, Action<Color> x, Ease ease = Ease.None, UpdateType updateType = UpdateType.Coroutine)
+    public Coroutine DOColor(Color sValue, Color eValue, float time, Action<Color> x, Ease ease = Ease.None, UpdateType updateType = UpdateType.Coroutine)
         => StartCoroutine(ColorTween(sValue, eValue, time, x, ease, updateType));
 
     private IEnumerator FloatTween(float sValue, float eValue, float time, Action<float> x, Ease ease, UpdateType updateType)

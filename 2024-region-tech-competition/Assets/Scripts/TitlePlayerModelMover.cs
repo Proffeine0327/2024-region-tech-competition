@@ -19,6 +19,7 @@ public class TitlePlayerModelMover : MonoBehaviour
     private void Start()
     {
         var model = Instantiate(resourceLoader.playerModels[dataManager.playerSelect], transform, true);
+        model.GetComponent<MeshRenderer>().sharedMaterial = resourceLoader.playerColors[dataManager.playerColorSelect];
         model.transform.localPosition = Vector3.zero;
         model.transform.localEulerAngles = Vector3.zero;
     }

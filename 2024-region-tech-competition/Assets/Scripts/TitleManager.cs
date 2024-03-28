@@ -19,7 +19,7 @@ public class TitleManager : MonoBehaviour
 
     private void Start()
     {
-        store.onClick.AddListener(() => StartCoroutine(SceneChangeRoutine(() => fade.LoadSceneFade("RepairShop"))));
+        store.onClick.AddListener(() => StartCoroutine(SceneChangeRoutine(() => fade.LoadSceneFade("RepairStore"))));
     }
 
     private IEnumerator SceneChangeRoutine(System.Action onComplete = null)
@@ -28,10 +28,14 @@ public class TitleManager : MonoBehaviour
         play.gameObject.SetActive(false);
         store.gameObject.SetActive(false);
 
-        mover.Disappeare(5f);
-        for (float t = 0; t < 5; t += Time.deltaTime)
+        mover.Disappeare(3f);
+
+        var camera = Camera.main;
+        for (float t = 0; t < 3; t += Time.deltaTime)
         {
-            Camera.main.transform.LookAt(mover.transform);
+            var diff = mover.transform.position - camera.transform.position;
+            var rot = Quaternion.LookRotation(diff);
+            camera.transform.rotation = Quaternion.Lerp(camera.transform.rotation, rot, Time.deltaTime * 10);
             yield return null;
         }
         onComplete?.Invoke();

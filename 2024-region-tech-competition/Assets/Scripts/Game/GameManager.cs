@@ -31,12 +31,6 @@ public class GameManager : MonoBehaviour
         isGameRunning = false;
     }
 
-    private void Awake()
-    {
-        player.playerModel = Instantiate(resourceLoader.playerModels[dataManager.playerSelect], player.orientation);
-        player.playerModel.transform.localPosition = Vector3.zero;
-    }
-
     private void Start()
     {
         StartCoroutine(GameRoutine());

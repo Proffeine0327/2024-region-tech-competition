@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using System;
+using System.Resources;
 
 public class Player : BaseFlighter
 {
@@ -11,13 +12,10 @@ public class Player : BaseFlighter
 
     private DataManager dataManager => DataManager.Instance;
     private GameManager gameManager => GameManager.Instance;
+    private ResourceLoader resourceLoader => ResourceLoader.Instance;
 
     public Transform orientation;
     public LayerMask modelAlignLayer;
-    public float acc;
-    public float maxSpeed;
-    public float steerSpeed;
-    public float driftSteerSpeed;
 
     [NonSerialized] public int money;
     [NonSerialized] public float curMaxSpeed;
@@ -25,16 +23,19 @@ public class Player : BaseFlighter
     [NonSerialized] public new Rigidbody rigidbody;
     [NonSerialized] public PlayerModel playerModel;
 
-    public float DisplaySpeed => rigidbody.velocity.magnitude * 5;
-    public float DisplayMaxSpeed => maxSpeed * 5;
-    public float DisplaySteerSpeed => steerSpeed * 5;
+    public PlayerData PlayerData => dataManager.playerDatas[dataManager.playerSelect];
+    public float Speed => rigidbody.velocity.magnitude;
 
     protected override void Start()
     {
         base.Start();
         rigidbody = GetComponent<Rigidbody>();
-        playerModel = model.GetComponent<PlayerModel>();
-        curMaxSpeed = maxSpeed;
+
+        playerModel = Instantiate(resourceLoader.playerModels[dataManager.playerSelect], orientation);
+        playerModel.transform.localPosition = Vector3.zero;
+        model = playerModel.transform;
+
+        curMaxSpeed = PlayerData.maxSpeed;
     }
 
     private void Update()
@@ -46,7 +47,7 @@ public class Player : BaseFlighter
         if (!canMove) return;
 
         playerModel.isDrift = Input.GetKey(KeyCode.LeftShift);
-        curSteerSpeed = Mathf.Lerp(curSteerSpeed, Input.GetKey(KeyCode.LeftShift) ? driftSteerSpeed : steerSpeed, Time.deltaTime * 2f);
+        curSteerSpeed = Mathf.Lerp(curSteerSpeed, Input.GetKey(KeyCode.LeftShift) ? PlayerData.driftSteerSpeed : PlayerData.steerSpeed, Time.deltaTime * 2f);
 
         orientation.Rotate(0, Input.GetAxis("Horizontal") * curSteerSpeed * Time.deltaTime, 0);
 
@@ -72,7 +73,7 @@ public class Player : BaseFlighter
             3 => dataManager.cityWing,
             _ => false
         };
-        rigidbody.AddForce(Input.GetAxisRaw("Vertical") * model.forward * acc * (displayWheel ? 1.25f : 1), ForceMode.Acceleration);
+        rigidbody.AddForce(Input.GetAxisRaw("Vertical") * model.forward * PlayerData.acceleration * (displayWheel ? 1.25f : 1), ForceMode.Acceleration);
     }
 
     protected override void OnTriggerEnter(Collider other)
@@ -100,18 +101,18 @@ public class Player : BaseFlighter
     private IEnumerator SpeedFastRoutine()
     {
         playerModel.isSpeed = true;
-        TweenUtility.DOFloat(curMaxSpeed, maxSpeed * 1.5f, 0.5f, x => curMaxSpeed = x);
+        TweenUtility.DOFloat(curMaxSpeed, PlayerData.maxSpeed * 1.5f, 0.5f, x => curMaxSpeed = x);
         yield return new WaitForSeconds(3f);
-        TweenUtility.DOFloat(curMaxSpeed, maxSpeed, 0.5f, x => curMaxSpeed = x);
+        TweenUtility.DOFloat(curMaxSpeed, PlayerData.maxSpeed, 0.5f, x => curMaxSpeed = x);
         playerModel.isSpeed = false;
     }
 
     private IEnumerator SpeedSuperFastRoutine()
     {
         playerModel.isSpeed = true;
-        TweenUtility.DOFloat(curMaxSpeed, maxSpeed * 2, 0.5f, x => curMaxSpeed = x);
+        TweenUtility.DOFloat(curMaxSpeed, PlayerData.maxSpeed * 2, 0.5f, x => curMaxSpeed = x);
         yield return new WaitForSeconds(3f);
-        TweenUtility.DOFloat(curMaxSpeed, maxSpeed, 0.5f, x => curMaxSpeed = x);
+        TweenUtility.DOFloat(curMaxSpeed, PlayerData.maxSpeed, 0.5f, x => curMaxSpeed = x);
         playerModel.isSpeed = false;
     }
 }
