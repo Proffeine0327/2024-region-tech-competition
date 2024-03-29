@@ -5,7 +5,7 @@ using UnityEngine;
 public class RotatePlate : MonoBehaviour
 {
     private DataManager dataManager => DataManager.Instance;
-    private ResourceLoader resourceLoader => ResourceLoader.Instance;
+    private ResourceContainer resourceContainer => ResourceContainer.Instance;
 
     private int prevPlayer = -1;
     private int prevColor = -1;
@@ -19,8 +19,8 @@ public class RotatePlate : MonoBehaviour
         {
             prevPlayer = dataManager.playerSelect;
             if (model) Destroy(model.gameObject);
-            model = Instantiate(resourceLoader.playerModels[dataManager.playerSelect], transform, true).GetComponent<MeshRenderer>();
-            model.sharedMaterial = resourceLoader.playerColors[dataManager.playerColorSelect];
+            model = Instantiate(resourceContainer.playerModels[dataManager.playerSelect], transform, true).GetComponent<MeshRenderer>();
+            model.sharedMaterial = resourceContainer.playerColors[dataManager.playerColorSelect];
             model.transform.localPosition = new Vector3(0, 3.333f, 0.1f);
             model.transform.localEulerAngles = Vector3.zero;
         }
@@ -28,7 +28,7 @@ public class RotatePlate : MonoBehaviour
         if(prevColor != dataManager.playerColorSelect)
         {
             prevColor = dataManager.playerColorSelect;
-            model.sharedMaterial = resourceLoader.playerColors[dataManager.playerColorSelect];
+            model.sharedMaterial = resourceContainer.playerColors[dataManager.playerColorSelect];
         }
     }
 }

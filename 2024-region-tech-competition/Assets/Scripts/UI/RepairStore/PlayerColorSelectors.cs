@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class PlayerColorSelectors : MonoBehaviour
 {
-    private ResourceLoader resourceLoader => ResourceLoader.Instance;
+    private ResourceContainer resourceContainer => ResourceContainer.Instance;
     private DataManager dataManager => DataManager.Instance;
 
     public List<Button> buttons;
@@ -15,7 +15,7 @@ public class PlayerColorSelectors : MonoBehaviour
     {
         buttons.For((b, i) =>
         {
-            b.image.color = GetColor(resourceLoader.playerColors[i].name);
+            b.image.color = GetColor(resourceContainer.playerColors[i].name);
             b.onClick.AddListener(() => dataManager.playerColorSelect = i);
         });
     }

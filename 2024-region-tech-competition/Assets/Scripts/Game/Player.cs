@@ -12,7 +12,7 @@ public class Player : BaseFlighter
 
     private DataManager dataManager => DataManager.Instance;
     private GameManager gameManager => GameManager.Instance;
-    private ResourceLoader resourceLoader => ResourceLoader.Instance;
+    private ResourceContainer resourceContainer => ResourceContainer.Instance;
 
     public Transform orientation;
     public LayerMask modelAlignLayer;
@@ -31,7 +31,7 @@ public class Player : BaseFlighter
         base.Start();
         rigidbody = GetComponent<Rigidbody>();
 
-        playerModel = Instantiate(resourceLoader.playerModels[dataManager.playerSelect], orientation);
+        playerModel = Instantiate(resourceContainer.playerModels[dataManager.playerSelect], orientation);
         playerModel.transform.localPosition = Vector3.zero;
         model = playerModel.transform;
 

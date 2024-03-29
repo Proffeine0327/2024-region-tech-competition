@@ -60,3 +60,10 @@ MonoBehaviour:
     maxSpeed: 45
     steerSpeed: 30
     driftSteerSpeed: 120
+  enemyDatas:
+  - acceleration: 22.5
+    maxSpeed: 30
+  - acceleration: 22.5
+    maxSpeed: 30
+  - acceleration: 30
+    maxSpeed: 30
