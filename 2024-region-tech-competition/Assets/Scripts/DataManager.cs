@@ -20,11 +20,19 @@ public class PlayerData
     public float driftSteerSpeed;
 }
 
+[Serializable]
+public class EnemyData
+{
+    public float acceleration;
+    public float maxSpeed;
+}
+
 public class DataManager : MonoBehaviour
 {
     public static DataManager Instance { get; private set; }
 
     public PlayerData[] playerDatas;
+    public EnemyData[] enemyDatas;
 
     [NonSerialized] public int money = 10000;
     [NonSerialized] public List<int> unlockPlayer = new() { 0 };

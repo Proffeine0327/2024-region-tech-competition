@@ -5,12 +5,15 @@ using UnityEngine.AI;
 
 public class Enemy : BaseFlighter
 {
+    private DataManager dataManager => DataManager.Instance;
+    private GameManager gameManager => GameManager.Instance;
+
     [SerializeField] private NavMeshAgent followTarget;
-    [SerializeField] private float acceleration;
-    [SerializeField] private float maxSpeed;
 
     private bool isMoving;
     private new Rigidbody rigidbody;
+
+    private EnemyData enemyData => dataManager.enemyDatas[gameManager.stage];
 
     protected override void Start()
     {
@@ -24,14 +27,14 @@ public class Enemy : BaseFlighter
         if (!isMoving)
         {
             isMoving = true;
-            followTarget.speed = maxSpeed;
+            followTarget.speed = enemyData.maxSpeed;
         }
 
         followTarget.enabled = Vector3.Distance(transform.position, followTarget.transform.position) < 40;
         if(followTarget.isActiveAndEnabled) followTarget.SetDestination(GameManager.Instance.endPoint.position);
         
         var vely = rigidbody.velocity.y;
-        rigidbody.velocity = Vector3.ClampMagnitude(new Vector3(rigidbody.velocity.x, 0, rigidbody.velocity.z), maxSpeed * slow);
+        rigidbody.velocity = Vector3.ClampMagnitude(new Vector3(rigidbody.velocity.x, 0, rigidbody.velocity.z), enemyData.maxSpeed * slow);
         rigidbody.velocity = new Vector3(rigidbody.velocity.x, vely, rigidbody.velocity.z);
     }
 
@@ -47,7 +50,7 @@ public class Enemy : BaseFlighter
             dir = dir.normalized;
             transform.rotation = Quaternion.LookRotation(dir);
 
-            rigidbody.AddForce(transform.forward * acceleration, ForceMode.Acceleration);
+            rigidbody.AddForce(transform.forward * enemyData.acceleration, ForceMode.Acceleration);
         }
     }
 }

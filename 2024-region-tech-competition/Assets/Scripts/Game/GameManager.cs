@@ -8,15 +8,11 @@ public class GameManager : MonoBehaviour
     private static GameManager instance;
     public static GameManager Instance => instance ??= FindAnyObjectByType<GameManager>();
 
-    private Player player => Player.Instance;
-    private DataManager dataManager => DataManager.Instance;
-    private ResourceLoader resourceLoader => ResourceLoader.Instance;
-
+    public int stage;
     public GameStartWaitCounter startWaitCounter;
     public GameClearDisplayer clearDisplayer;
     public GameOverDisplayer overDisplayer;
     public Transform endPoint;
-    public int stage;
 
     private BaseFlighter endFlighter;
 
