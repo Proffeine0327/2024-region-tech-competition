@@ -52,12 +52,12 @@ MonoBehaviour:
     driftSteerSpeed: 120
   - unlockMoney: 150
     acceleration: 25
-    maxSpeed: 40
+    maxSpeed: 37.5
     steerSpeed: 30
     driftSteerSpeed: 120
   - unlockMoney: 200
-    acceleration: 30
-    maxSpeed: 45
+    acceleration: 27.5
+    maxSpeed: 40
     steerSpeed: 30
     driftSteerSpeed: 120
   enemyDatas:

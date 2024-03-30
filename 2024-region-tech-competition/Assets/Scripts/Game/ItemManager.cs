@@ -6,8 +6,7 @@ public enum ItemType { Money10, Money50, Money100, SpeedFast, SpeedSuperFast, Jo
 
 public class ItemManager : MonoBehaviour
 {
-    private static ItemManager instance;
-    public static ItemManager Instance => instance ??= FindAnyObjectByType<ItemManager>();
+    public static ItemManager Instance { get; private set; }
 
     [SerializeField] private GameObject mask;
     [SerializeField] private RectTransform slotGroup;
@@ -18,6 +17,7 @@ public class ItemManager : MonoBehaviour
 
     private void Awake()
     {
+        Instance = this;
         startPos = slotGroup.anchoredPosition;
     }
 

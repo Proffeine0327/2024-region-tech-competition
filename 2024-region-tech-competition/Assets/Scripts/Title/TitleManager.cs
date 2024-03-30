@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class TitleManager : MonoBehaviour
 {
     private static TitleManager instance;
-    public static TitleManager Instance => instance ??= FindObjectOfType<TitleManager>();
+    public static TitleManager Instance { get; private set; }
 
     private Fade fade => Fade.Instance;
 
@@ -18,12 +18,17 @@ public class TitleManager : MonoBehaviour
 
     private List<Vector2> startPositions = new();
 
+    private void Awake()
+    {
+        instance = this;
+    }
+
     private void Start()
     {
-        buttons[0].onClick.AddListener(() => { }); //play
+        buttons[0].onClick.AddListener(() => StartCoroutine(SceneChangeRoutine(() => fade.LoadSceneFade("Stage1")))); //play
         buttons[1].onClick.AddListener(() => fade.LoadSceneFade("RepairStore")); //repair
         buttons[2].onClick.AddListener(() => { }); //how2play
-        buttons[3].onClick.AddListener(() => { }); //ranking
+        buttons[3].onClick.AddListener(() => fade.LoadSceneFade("Ranking")); //ranking
         buttons[4].onClick.AddListener(() => { }); //exit
 
         buttons.ForEach(button => startPositions.Add((button.transform as RectTransform).anchoredPosition));

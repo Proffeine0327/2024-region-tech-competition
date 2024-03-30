@@ -27,6 +27,15 @@ public class EnemyData
     public float maxSpeed;
 }
 
+[Serializable]
+public class RankingData
+{
+    public float time;
+    public PlayerModel model;
+    public Material color;
+    public DateTime datetime;
+}
+
 public class DataManager : MonoBehaviour
 {
     public static DataManager Instance { get; private set; }
@@ -42,10 +51,11 @@ public class DataManager : MonoBehaviour
     [NonSerialized] public bool mountainWing;
     [NonSerialized] public bool cityWing;
     [NonSerialized] public EngineType engine;
+    [NonSerialized] public List<RankingData> ranking = new();
 
     private void Awake()
     {
-        if(Instance == null)
+        if (Instance == null)
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
@@ -54,5 +64,30 @@ public class DataManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
+        ranking = new()
+        {
+            new RankingData
+            {
+                color = ResourceContainer.Instance.playerColors[1],
+                datetime = DateTime.Now,
+                model = ResourceContainer.Instance.playerModels[1],
+                time = 20.1f
+            },
+            new RankingData
+            {
+                color = ResourceContainer.Instance.playerColors[0],
+                datetime = DateTime.Now,
+                model = ResourceContainer.Instance.playerModels[0],
+                time = 10.1f
+            },
+            new RankingData
+            {
+                color = ResourceContainer.Instance.playerColors[2],
+                datetime = DateTime.Now,
+                model = ResourceContainer.Instance.playerModels[2],
+                time = 30.1f
+            }
+        };
     }
 }

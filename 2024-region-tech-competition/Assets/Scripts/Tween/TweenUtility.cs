@@ -25,6 +25,9 @@ public static class TweenUtility
     public static Coroutine DOAnchorMove(this RectTransform t, Vector2 vec, float duration, Ease ease = Ease.None, UpdateType updateType = UpdateType.Coroutine)
         => TweenInvoker.Instance.DOVector2(t.anchoredPosition, vec, duration, x => t.anchoredPosition = x, ease, updateType);
 
+    public static Coroutine DOAnchorMoveY(this RectTransform t, float y, float duration, Ease ease = Ease.None, UpdateType updateType = UpdateType.Coroutine)
+        => TweenInvoker.Instance.DOVector2(t.anchoredPosition, new Vector2(t.anchoredPosition.x, y), duration, x => t.anchoredPosition = x, ease, updateType);    
+
     public static Coroutine DOSizeDelta(this RectTransform t, Vector2 vec, float duration, Ease ease = Ease.None, UpdateType updateType = UpdateType.Coroutine)
         => TweenInvoker.Instance.DOVector2(t.sizeDelta, vec, duration, x => t.sizeDelta = x, ease, updateType);
 

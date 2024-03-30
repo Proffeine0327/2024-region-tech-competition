@@ -7,8 +7,7 @@ using System.Resources;
 
 public class Player : BaseFlighter
 {
-    private static Player instance;
-    public static Player Instance => instance ??= FindAnyObjectByType<Player>();
+    public static Player Instance { get; private set; }
 
     private DataManager dataManager => DataManager.Instance;
     private GameManager gameManager => GameManager.Instance;
@@ -26,12 +25,18 @@ public class Player : BaseFlighter
     public PlayerData PlayerData => dataManager.playerDatas[dataManager.playerSelect];
     public float Speed => rigidbody.velocity.magnitude;
 
+    private void Awake()
+    {
+        Instance = this;
+    }
+
     protected override void Start()
     {
         base.Start();
         rigidbody = GetComponent<Rigidbody>();
 
         playerModel = Instantiate(resourceContainer.playerModels[dataManager.playerSelect], orientation);
+        playerModel.GetComponent<MeshRenderer>().sharedMaterial = resourceContainer.playerColors[dataManager.playerColorSelect];
         playerModel.transform.localPosition = Vector3.zero;
         model = playerModel.transform;
 
@@ -86,9 +91,9 @@ public class Player : BaseFlighter
             {
                 switch (item)
                 {
-                    case ItemType.Money10: money += 10; break;
-                    case ItemType.Money50: money += 50; break;
-                    case ItemType.Money100: money += 100; break;
+                    case ItemType.Money10: money += 10; gameManager.gainMoney += 10; break;
+                    case ItemType.Money50: money += 50; gameManager.gainMoney += 50; break;
+                    case ItemType.Money100: money += 100; gameManager.gainMoney += 100; break;
                     case ItemType.SpeedFast: StartCoroutine(SpeedFastRoutine()); break;
                     case ItemType.SpeedSuperFast: StartCoroutine(SpeedSuperFastRoutine()); break;
                     //case ItemType.JoinShop: UpgradeManager.Instance.Display(); break;

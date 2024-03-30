@@ -32,12 +32,14 @@ public class Fade : MonoBehaviour
     private IEnumerator FadeRoutine(string sceneName, Settings settings)
     {
         mask.gameObject.SetActive(true);
-        mask.DOSizeDelta(Vector2.zero, 1f, Ease.OutQuad);
-        yield return new WaitForSeconds(1.5f);
+        mask.DOSizeDelta(Vector2.zero, 1f, Ease.OutQuad, UpdateType.Update);
+        yield return new WaitForSecondsRealtime(1.5f);
+        Time.timeScale = 1;
+        yield return new WaitForSecondsRealtime(0);
         SceneManager.LoadScene(sceneName);
         settings.onSceneLoaded?.Invoke();
-        mask.DOSizeDelta(Vector2.one * 2500, 1f, Ease.InQuad);
-        yield return new WaitForSeconds(1f);
+        mask.DOSizeDelta(Vector2.one * 2500, 1f, Ease.InQuad, UpdateType.Update);
+        yield return new WaitForSecondsRealtime(1f);
         mask.gameObject.SetActive(false);
     }
 

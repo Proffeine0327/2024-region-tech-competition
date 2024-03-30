@@ -5,8 +5,7 @@ using System;
 
 public class GameManager : MonoBehaviour
 {
-    private static GameManager instance;
-    public static GameManager Instance => instance ??= FindAnyObjectByType<GameManager>();
+    public static GameManager Instance { get; private set; }
 
     public int stage;
     public GameStartWaitCounter startWaitCounter;
@@ -16,6 +15,7 @@ public class GameManager : MonoBehaviour
 
     private BaseFlighter endFlighter;
 
+    [NonSerialized] public int gainMoney;
     [NonSerialized] public bool isGameRunning;
     [NonSerialized] public float playTime;
 
@@ -25,6 +25,11 @@ public class GameManager : MonoBehaviour
 
         endFlighter = end;
         isGameRunning = false;
+    }
+
+    private void Awake()
+    {
+        Instance = this;
     }
 
     private void Start()
@@ -45,13 +50,14 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(1f);
         startWaitCounter.Display(2);
         yield return new WaitForSeconds(1f);
-        startWaitCounter.Display(1);        
+        startWaitCounter.Display(1);
         yield return new WaitForSeconds(1f);
-        startWaitCounter.Display(0);                
+        startWaitCounter.Display(0);
         isGameRunning = true;
 
         yield return new WaitUntil(() => !isGameRunning);
         yield return new WaitForSeconds(3f);
+        Time.timeScale = 0;
         if (endFlighter is Player) clearDisplayer.Display();
         if (endFlighter is Enemy) overDisplayer.Display();
     }
