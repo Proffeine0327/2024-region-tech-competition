@@ -20,6 +20,7 @@ public class Player : BaseFlighter
     [NonSerialized] public float curMaxSpeed;
     [NonSerialized] public float curSteerSpeed;
     [NonSerialized] public new Rigidbody rigidbody;
+    [NonSerialized] public AudioSource audioSource;
     [NonSerialized] public PlayerModel playerModel;
 
     public PlayerData PlayerData => dataManager.playerDatas[dataManager.playerSelect];
@@ -34,6 +35,7 @@ public class Player : BaseFlighter
     {
         base.Start();
         rigidbody = GetComponent<Rigidbody>();
+        audioSource = GetComponent<AudioSource>();
 
         playerModel = Instantiate(resourceContainer.playerModels[dataManager.playerSelect], orientation);
         playerModel.GetComponent<MeshRenderer>().sharedMaterial = resourceContainer.playerColors[dataManager.playerColorSelect];
@@ -65,6 +67,7 @@ public class Player : BaseFlighter
         };
         rigidbody.velocity = Vector3.ClampMagnitude(new Vector3(rigidbody.velocity.x, 0, rigidbody.velocity.z), curMaxSpeed * mul * slow);
         rigidbody.velocity = new Vector3(rigidbody.velocity.x, velY, rigidbody.velocity.z);
+        audioSource.pitch = Mathf.LerpUnclamped(0.75f, 1.75f, Mathf.LerpUnclamped(0, 1, Speed / PlayerData.maxSpeed));
     }
 
     private void FixedUpdate()

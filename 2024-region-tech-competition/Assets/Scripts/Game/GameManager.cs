@@ -18,6 +18,7 @@ public class GameManager : MonoBehaviour
     [NonSerialized] public int gainMoney;
     [NonSerialized] public bool isGameRunning;
     [NonSerialized] public float playTime;
+    [NonSerialized] public AudioSource audioSource;
 
     public void GameEnd(BaseFlighter end)
     {
@@ -30,6 +31,8 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+
+        audioSource = GetComponent<AudioSource>();
     }
 
     private void Start()
@@ -47,12 +50,17 @@ public class GameManager : MonoBehaviour
     {
         yield return new WaitForSeconds(3f);
         startWaitCounter.Display(3);
+        audioSource.Play();
         yield return new WaitForSeconds(1f);
         startWaitCounter.Display(2);
+        audioSource.Play();
         yield return new WaitForSeconds(1f);
         startWaitCounter.Display(1);
+        audioSource.Play();
         yield return new WaitForSeconds(1f);
         startWaitCounter.Display(0);
+        audioSource.pitch = 2f;
+        audioSource.Play();
         isGameRunning = true;
 
         yield return new WaitUntil(() => !isGameRunning);

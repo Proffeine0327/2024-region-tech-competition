@@ -15,6 +15,7 @@ public class TitleManager : MonoBehaviour
     [Header("UI")]
     public GameObject title;
     public List<Button> buttons;
+    public How2PlayUI how2playui;
 
     private List<Vector2> startPositions = new();
 
@@ -27,9 +28,9 @@ public class TitleManager : MonoBehaviour
     {
         buttons[0].onClick.AddListener(() => StartCoroutine(SceneChangeRoutine(() => fade.LoadSceneFade("Stage1")))); //play
         buttons[1].onClick.AddListener(() => fade.LoadSceneFade("RepairStore")); //repair
-        buttons[2].onClick.AddListener(() => { }); //how2play
+        buttons[2].onClick.AddListener(() => how2playui.Display()); //how2play
         buttons[3].onClick.AddListener(() => fade.LoadSceneFade("Ranking")); //ranking
-        buttons[4].onClick.AddListener(() => { }); //exit
+        buttons[4].onClick.AddListener(() => Application.Quit()); //exit
 
         buttons.ForEach(button => startPositions.Add((button.transform as RectTransform).anchoredPosition));
     }
